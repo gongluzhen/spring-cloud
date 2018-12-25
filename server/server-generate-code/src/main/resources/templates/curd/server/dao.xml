@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>dao</name>
+	<filePath>server/server-${moduleProjectName}/src/main/java/${basePackageName}/server/${moduleName}/dao</filePath>
+	<fileName>${ClassName}Dao.java</fileName>
+	<content><![CDATA[
+package ${basePackageName}.server.${moduleName}.dao;
+
+import ${basePackageName}.common.server.mybatis.CrudDao;
+import ${basePackageName}.common.server.mybatis.annotation.MyBatisDao;
+import ${basePackageName}.moudle.${moduleName}.${ClassName};
+
+/**
+ * ${functionName}DAO接口
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@MyBatisDao
+public interface ${ClassName}Dao extends CrudDao<${ClassName}> {
+	
+}]]>
+	</content>
+</template>

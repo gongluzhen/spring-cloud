@@ -1,0 +1,55 @@
+<div th:fragment="tree-select(id, name, value, labelName, labelValue, title, url, extId, cssClass, allowClear)">
+	<div class="input-append">
+		<input th:id="${id} + 'Id'" th:name="${name}" th:class="${cssClass}" type="hidden" th:value="${value}"/>
+		<input th:id="${id} + 'Name'" th:name="${labelName}" readonly="readonly" type="text" th:value="${labelValue}" th:class="${cssClass}" />
+		<a th:id="${id} + 'Button'" href="javascript:" th:class="btn" >&nbsp;<i class="icon-search"></i>&nbsp;</a>&nbsp;&nbsp;
+	</div>
+	<script type="text/javascript">
+		$("#[[${id}]]Button, #[[${id}]]Name").click(function(){
+			// 是否限制选择，如果限制，设置为disabled
+			if ($("#[[${id}]]Button").hasClass("disabled")){
+				return true;
+			}
+			var buttons = {};
+			if([[${allowClear}]]){
+				buttons = {"确定": "ok", "清除": "clear","关闭" : true}
+			} else {
+				buttons = {"确定": "ok", "关闭": true}
+			}
+			// 正常打开	
+			top.$.jBox.open(
+				"iframe:" + ctx + "tag/treeselect?url=" + encodeURIComponent("[[${url}]]") + "&extId=[[${extId}]]",
+				"选择[[${title}]]",
+				300,
+				420,
+				{
+					ajaxData : {selectIds: $("#[[${id}]]Id").val()},
+					buttons : buttons,
+					submit:function(v, h, f){
+						if (v == "ok"){
+							var tree = h.find("iframe")[0].contentWindow.tree;
+							var ids = [], names = [], nodes = [];
+							nodes = tree.getSelectedNodes();
+							for(var i=0; i<nodes.length; i++) {
+								ids.push(nodes[i].id);
+								names.push(nodes[i].name);
+								break;
+							}
+							$("#[[${id}]]Id").val(ids.join(",").replace(/u_/ig,""));
+							$("#[[${id}]]Name").val(names.join(","));
+						} else if (v == "clear"){
+							$("#[[${id}]]Id").val("");
+							$("#[[${id}]]Name").val("");
+						}
+						if(typeof [[${id}]]TreeselectCallBack == 'function'){
+							[[${id}]]TreeselectCallBack(v, h, f);
+						}
+					},
+					loaded:function(h){
+						$(".jbox-content", top.document).css("overflow-y","hidden");
+					}
+				}
+			);
+		});
+	</script>
+</div>

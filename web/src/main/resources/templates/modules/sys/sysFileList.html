@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/sys/sysFileList.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li class="active">
+				<a th:href="@{/sys/sysFile}">系统-附件表列表</a>
+			</li>
+		</ul>
+		<form id="searchForm" modelAttribute="sysFile" th:action="@{/sys/sysFile}"  method="post" class="breadcrumb form-search">
+			<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
+			<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
+			<ul class="ul-form">
+				<li><label>名称：</label>
+					<input id="name" name="name" type="text" th:value="${sysFile.name}" htmlEscape="false" maxlength="100" class="input-medium"/>
+				</li>
+				<li><label>业务表名称：</label>
+					<input id="businessTableName" name="businessTableName" type="text" th:value="${sysFile.businessTableName}" htmlEscape="false" maxlength="200" class="input-medium"/>
+				</li>
+				<li><label>业务表主键：</label>
+					<input id="businessKey" name="businessKey" type="text" th:value="${sysFile.businessKey}" htmlEscape="false" maxlength="64" class="input-medium"/>
+				</li>
+				<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
+				<li class="clearfix"></li>
+			</ul>
+		</form>
+		<div th:include="common/message :: message(${message}, null)"></div>
+		<table id="contentTable" class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th>名称</th>
+					<th>类型</th>
+					<th>大小</th>
+					<th>业务表名称</th>
+					<th>业务表主键</th>
+					<th>创建者</th>
+					<th>创建日期</th>
+					<th>状态</th>
+					<th shiro:hasPermission="sys:sysFile:edit">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="sysFile: ${page.list}">
+						<td th:text="${sysFile.name}"></td>
+						<td th:text="${sysFile.contentType}"></td>
+						<td th:text="${#common.byteCountToDisplaySize(sysFile.size)}"></td>
+						<td th:text="${sysFile.businessTableName}"></td>
+						<td th:text="${sysFile.businessKey}"></td>
+						<td th:text="${sysFile.createBy.name}"></td>
+						<td th:text="${#common.formatDate(sysFile.createDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						<td th:style="${sysFile.delFlag == '1' ? 'color: red;' : ''}" th:text="${#common.getDictLabel(sysFile.delFlag, 'del_flag' , '')}"></td>
+						<td shiro:hasPermission="sys:sysFile:edit">
+							<a th:href="@{'/sys/sysFile/downLoad?id=' + ${sysFile.id}}">下载</a>
+						</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="pagination" th:utext="${page}"></div>
+	</body>
+</html>

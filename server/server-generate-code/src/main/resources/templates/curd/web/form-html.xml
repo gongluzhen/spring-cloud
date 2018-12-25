@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>form-html</name>
+	<filePath>web/src/main/resources/templates/modules/${moduleName}</filePath>
+	<fileName>${className}Form.html</fileName>
+	<content><![CDATA[
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/${moduleWebName}/${className}Form.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li>
+				<a th:href="@{/${moduleWebName}/${className}}">${functionNameSimple}列表</a>
+			</li>
+			<li class="active">
+				<a shiro:hasPermission="${modulePermissionsName}:${className}:edit" th:text="'${functionNameSimple}' + ${"$"}{#strings.isEmpty(${className}.id) ? '添加' : '修改'}" th:href="@{'/${moduleWebName}/${className}/form?id=' + ${"$"}{${className}.id}}"></a>
+				<a shiro:lacksPermission="${modulePermissionsName}:${className}:edit" th:href="@{'/${moduleWebName}/${className}/form?id=' + ${"$"}{${className}.id}}">${functionNameSimple}查看</a>
+			</li>
+		</ul><br/>
+		<form id="inputForm" modelAttribute="${className}" th:action="@{/${moduleWebName}/${className}/save}" method="post" class="form-horizontal">
+			<input type="hidden" id="id" name="id" th:value="${"$"}{${className}.id}" />
+			<div th:include="common/message :: message(${"$"}{message}, null)"></div>
+			<#list table.columnList as c>
+				<#if c.isEdit?? && c.isEdit == "1" && (c.isNotBaseField || c.simpleJavaField == 'remarks')>
+			<div class="control-group">
+				<label class="control-label">${c.comments}：</label>
+				<div class="controls" <#if c.showType == "checkbox" || c.showType == "radiobox">style="padding-top: 5px;"</#if>>
+				<#if c.showType == "input">
+					<input id="${c.javaFieldId}" name="${c.javaFieldId}" type="text" th:value="${"$"}{${className}.${c.javaFieldId}}" htmlEscape="false"<#if c.dataLength != "0"> maxlength="${c.dataLength}"</#if> class="input-xlarge <#if c.isNull != "1">required</#if><#if c.javaType == "Long" || c.javaType == "Integer"> digits</#if><#if c.javaType == "Double"> number</#if>"/>
+				<#elseif c.showType == "textarea">
+					<textarea id="${c.javaFieldId}" name="${c.javaFieldId}" th:text="${"$"}{${className}.${c.javaFieldId}}" htmlEscape="false" rows="4"<#if c.dataLength != "0"> maxlength="${c.dataLength}"</#if> class="input-xxlarge <#if c.isNull != "1">required</#if>"/>
+				<#elseif c.showType == "select">
+					<select id="${c.javaFieldId}" name="${c.javaFieldId}" th:value="${"$"}{${className}.${c.javaFieldId}}" class="input-xlarge <#if c.isNull != "1">required</#if>">
+						<option value="">==请选择==</option>
+						<option th:each="dict : ${"$"}{#common.getDictList('${c.dictType}')}" th:value="${"$"}{dict.value}" th:text="${"$"}{dict.label}"
+							 th:selected="${"$"}{dict.value == ${className}.${c.javaFieldId}}" th:title="${"$"}{dict.description}"></option>
+					</select>
+				<#elseif c.showType == "checkbox">
+					<span th:each="dict, dictS : ${"$"}{#common.getDictList('${c.dictType}')}">
+						<input type="checkbox" th:id="'${c.javaFieldId}' + ${"$"}{dictS.index}" name="${c.javaFieldId}" th:value="${"$"}{dict.value}" th:checked="${"$"}{#common.isCheckboxChecked(${className}.${c.javaFieldId}, dict.value)}" class="<#if c.isNull != "1">required</#if>" />
+						<label th:for="'${c.javaFieldId}' + ${"$"}{dictS.index}" th:text="${"$"}{dict.label}"></label>
+					</span>
+				<#elseif c.showType == "radiobox">
+					<span th:each="dict, dictS : ${"$"}{#common.getDictList('${c.dictType}')}">
+						<input type="radio" th:id="'${c.javaFieldId}' + ${"$"}{dictS.index}" name="${c.javaFieldId}" th:value="${"$"}{dict.value}" th:checked="${"$"}{dict.value == ${className}.${c.javaFieldId}}" class="<#if c.isNull != "1">required</#if>" />
+						<label th:for="'${c.javaFieldId}' + ${"$"}{dictS.index}" th:text="${"$"}{dict.label}"></label>
+					</span>
+				<#elseif c.showType == "dateselect">
+					<input id="${c.javaFieldId}" name="${c.javaFieldId}" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate <#if c.isNull != "1">required</#if>"
+						th:value="${"$"}{#common.formatDate(${className}.${c.javaFieldId}, 'yyyy-MM-dd HH:mm:ss')}"
+						onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+				</#if>
+				<#if c.isNull != "1">
+					<span class="help-inline"><font color="red">*</font> </span>
+				</#if>
+				</div>
+			</div>
+				</#if>
+			</#list>
+			<div class="form-actions">
+				<input shiro:hasPermission="${modulePermissionsName}:${className}:edit" id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			</div>
+		</form>
+	</body>
+</html>]]>
+	</content>
+</template>

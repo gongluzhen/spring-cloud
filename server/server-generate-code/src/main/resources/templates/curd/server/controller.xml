@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>controller</name>
+	<filePath>server/server-${moduleProjectName}/src/main/java/${basePackageName}/server/${moduleName}/controller</filePath>
+	<fileName>${ClassName}Controller.java</fileName>
+	<content><![CDATA[
+package ${basePackageName}.server.${moduleName}.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import ${basePackageName}.moudle.Page;
+import ${basePackageName}.moudle.${moduleName}.${ClassName};
+import ${basePackageName}.server.${moduleName}.service.${ClassName}Service;
+
+/**
+ * ${functionName}Controller
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@RestController
+@RequestMapping(value = "${className}")
+public class ${ClassName}Controller {
+	@Autowired
+	private ${ClassName}Service ${className}Service;
+
+	@RequestMapping(value = "getById", method = RequestMethod.POST)
+	public ${ClassName} getById(@RequestBody String id) {
+		return ${className}Service.get(id);
+	}
+
+	@RequestMapping(value = "get", method = RequestMethod.POST)
+	public ${ClassName} get(@RequestBody ${ClassName} ${className}) {
+		return ${className}Service.get(${className});
+	}
+
+	@RequestMapping(value = "findList", method = RequestMethod.POST)
+	public List<${ClassName}> findList(@RequestBody ${ClassName} ${ClassName}) {
+		return ${className}Service.findList(${ClassName});
+	}
+
+	@RequestMapping(value = "findPage", method = RequestMethod.POST)
+	public Page<${ClassName}> findPage(@RequestBody ${ClassName} ${className}) {
+		return ${className}Service.findPage(${className});
+	}
+
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	public ${ClassName} save(@RequestBody ${ClassName} ${className}) {
+		return ${className}Service.save(${className});
+	}
+
+	@RequestMapping(value = "delete", method = RequestMethod.POST)
+	public void delete(@RequestBody ${ClassName} ${className}) {
+		${className}Service.delete(${className});
+	}
+}]]>
+	</content>
+</template>

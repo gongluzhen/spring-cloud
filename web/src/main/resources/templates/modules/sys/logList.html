@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/sys/logList.js}"></script>
+	</head>
+	<body>
+		<form id="searchForm" th:action="@{/sys/log}" method="post" class="breadcrumb form-search">
+			<input id="pageNo" name="pageNo" type="hidden" th:value="${page.pageNo}"/>
+			<input id="pageSize" name="pageSize" type="hidden" th:value="${page.pageSize}"/>
+			<div>
+				<label>操作菜单：</label>
+				<input id="title" name="title" type="text" maxlength="50" class="input-mini" th:value="${log.title}"/>
+				<label>用户ID：</label>
+				<input id="createBy.id" name="createBy.id" type="text" maxlength="50" class="input-mini" th:value="${log.createBy == null ? '' : log.createBy.id}"/>
+			</div>
+			<div style="margin-top:8px;">
+				<label>日期范围：&nbsp;</label>
+				<input id="beginDate" name="beginDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+						th:value="${#common.formatDate(log.beginDate, 'yyyy-MM-dd HH:mm:ss')}"
+						onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+				<label>&nbsp;--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+				<input id="endDate" name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+						th:value="${#common.formatDate(log.endDate, 'yyyy-MM-dd HH:mm:ss')}"
+						onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+				<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>&nbsp;&nbsp;
+			</div>
+		</form>
+		<div th:include="common/message :: message(${message}, null)"></div>
+		<table id="contentTable" class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th>操作菜单</th>
+					<th>操作用户</th>
+					<th>所在机构</th>
+					<th>异常</th>
+					<th>操作者IP</th>
+					<th>操作时间</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="log: ${page.list}">
+					<td th:text="${log.title}"></td>
+					<td th:text="${log.createBy.name}"></td>
+					<td th:text="${log.createBy.office.name}"></td>
+					<td>
+						<a th:unless="${#strings.isEmpty(log.exception)}" href="javascript:void(0);" title="操作内容" data-container="body"
+							data-toggle="popover" data-placement="left" th:data-content="${#common.unescapeHtml(log.exception)}">操作内容</a>
+					</td>
+					<td th:text="${log.remoteAddr}"></td>
+					<td th:value="${#common.formatDate(log.createDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="pagination" th:utext="${page}"></div>
+	</body>
+</html>

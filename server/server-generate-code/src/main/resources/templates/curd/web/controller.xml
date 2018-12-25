@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>controller</name>
+	<filePath>web/src/main/java/${basePackageName}/web/modules/${moduleName}</filePath>
+	<fileName>${ClassName}Controller.java</fileName>
+	<content><![CDATA[
+package ${basePackageName}.web.modules.${moduleName};
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import ${basePackageName}.client.${moduleName}.${ClassName}Client;
+import ${basePackageName}.common.util.StringUtils;
+import ${basePackageName}.moudle.Page;
+import ${basePackageName}.moudle.${moduleName}.${ClassName};
+import ${basePackageName}.web.common.web.BaseController;
+import ${basePackageName}.web.common.utils.UserUtils;
+
+/**
+ * ${functionName}Controller
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@Controller
+@RequestMapping(value = "/${moduleWebName}/${className}")
+public class ${ClassName}Controller extends BaseController {
+	@Autowired
+	private ${ClassName}Client ${className}Client;
+	
+	@ModelAttribute
+	public ${ClassName} get(@RequestParam(required=false) String id) {
+		${ClassName} entity = null;
+		if (StringUtils.isNotBlank(id)){
+			entity = ${className}Client.getById(id);
+		}
+		if (entity == null){
+			entity = new ${ClassName}();
+		}
+		return entity;
+	}
+	
+	@RequiresPermissions("${modulePermissionsName}:${className}:view")
+	@RequestMapping(value = {"list", ""})
+	public String list(${ClassName} ${className}, HttpServletRequest request, HttpServletResponse response, Model model) {
+		${className}.setCurrentLoginUser(UserUtils.getUser());
+		${className}.setPage(new Page<${ClassName}>(request, response));
+		
+		Page<${ClassName}> page = ${className}Client.findPage(${className}); 
+		model.addAttribute("page", page);
+		
+		return "modules/${moduleWebName}/${className}List";
+	}
+
+	@RequiresPermissions("${modulePermissionsName}:${className}:view")
+	@RequestMapping(value = "form")
+	public String form(${ClassName} ${className}, Model model) {
+		model.addAttribute("${className}", ${className});
+		return "modules/${moduleWebName}/${className}Form";
+	}
+
+	@RequiresPermissions("${modulePermissionsName}:${className}:edit")
+	@RequestMapping(value = "save")
+	public String save(${ClassName} ${className}, Model model, RedirectAttributes redirectAttributes) {
+		if (!beanValidator(model, ${className})){
+			return form(${className}, model);
+		}
+		${className}.setCurrentLoginUser(UserUtils.getUser());
+		
+		${className}Client.save(${className});
+		addMessage(redirectAttributes, "保存${functionNameSimple}成功");
+		return "redirect:/${moduleWebName}/${className}/?repage";
+	}
+	
+	@RequiresPermissions("${modulePermissionsName}:${className}:edit")
+	@RequestMapping(value = "delete")
+	public String delete(${ClassName} ${className}, RedirectAttributes redirectAttributes) {
+		${className}Client.delete(${className});
+		addMessage(redirectAttributes, "删除${functionNameSimple}成功");
+		return "redirect:/${moduleWebName}/${className}/?repage";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "all")
+	public List<${ClassName}> listData(@RequestBody ${ClassName} ${className}) {
+		return ${className}Client.findList(${className});
+	}
+
+}]]>
+	</content>
+</template>

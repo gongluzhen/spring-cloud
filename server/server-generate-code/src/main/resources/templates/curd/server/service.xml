@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>service</name>
+	<filePath>server/server-${moduleProjectName}/src/main/java/${basePackageName}/server/${moduleName}/service</filePath>
+	<fileName>${ClassName}Service.java</fileName>
+	<content><![CDATA[
+package ${basePackageName}.server.${moduleName}.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import ${basePackageName}.moudle.Page;
+import ${basePackageName}.common.server.service.CrudService;
+import ${basePackageName}.moudle.${moduleName}.${ClassName};
+import ${basePackageName}.server.${moduleName}.dao.${ClassName}Dao;
+
+/**
+ * ${functionName}Service
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+@Service
+@Transactional(readOnly = true)
+public class ${ClassName}Service extends CrudService<${ClassName}Dao, ${ClassName}> {
+	public ${ClassName} get(String id) {
+		return super.get(id);
+	}
+	
+	public ${ClassName} get(${ClassName} ${className}) {
+		return super.get(${className});
+	}
+	
+	public List<${ClassName}> findList(${ClassName} ${className}) {
+		return super.findList(${className});
+	}
+	
+	public Page<${ClassName}> findPage(${ClassName} ${className}) {
+		return super.findPage(${className});
+	}
+	
+	@Transactional(readOnly = false)
+	public ${ClassName} save(${ClassName} ${className}) {
+		return super.save(${className});
+	}
+	
+	@Transactional(readOnly = false)
+	public void delete(${ClassName} ${className}) {
+		super.delete(${className});
+	}
+	
+}]]>
+	</content>
+</template>

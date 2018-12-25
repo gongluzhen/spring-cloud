@@ -1,0 +1,29 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: server-generate-code
+  profiles:
+    active: '@profiles.active@'
+  cloud:
+    config:
+      fail-fast: true
+      profile: '@profiles.active@'
+      discovery:
+        enabled: true
+        service-id: server-config
+  bus:
+    enabled: true
+    trace:
+      enabled: true
+eureka:
+  instance:
+    lease-renewal-interval-in-seconds: 5 #表示eureka client发送心跳给server端的频率。如果在leaseExpirationDurationInSeconds后，server端没有收到client的心跳，则将摘除该instance。
+    lease-expiration-duration-in-seconds: 10 #表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，在这个时间内若没收到下一次心跳，则将移除该instance。
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    prefer-ip-address: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

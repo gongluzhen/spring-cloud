@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+	    <title>spring boot</title>
+		<meta th:replace="common/include :: include"/>
+	    <link th:href="@{/static/app/css/index.css}" href="/static/app/css/index.css" rel="stylesheet" />
+	  	<link rel="stylesheet" th:href="@{/static/jerichotab/css/jquery.jerichotab.css}" th:if="${'1'.equals(tabmode)}" />
+	    <script type="text/javascript" th:src="@{/static/jerichotab/js/jquery.jerichotab.js}" th:if="${'1'.equals(tabmode)}"></script>
+	</head>
+	<body>
+		<div id="main">
+			<div id="header" class="navbar navbar-fixed-top">
+				<div class="navbar-inner">
+					<div class="brand"><span id="productName">spring boot</span></div>
+					<ul id="userControl" class="nav pull-right">
+						<li id="themeSwitch" class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" title="主题切换"><i class="icon-th-large"></i></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a th:if="${'1'.equals(tabmode)}" href="javascript:cookie('tabmode', '0');location=location.href;">关闭页签模式</a>
+									<a th:unless="${'1'.equals(tabmode)}" href="javascript:cookie('tabmode', '1');location=location.href;">开启页签模式</a>
+								</li>
+							</ul>
+						</li>
+						<li id="userInfo" class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" title="个人信息" th:text="'您好, ' + ${user.name} +  '&nbsp;'"><span id="notifyNum" class="label label-info hide"></span></a>
+							<ul class="dropdown-menu">
+								<li><a th:href="@{/sys/user/info}" target="mainFrame"><i class="icon-user"></i>&nbsp; 个人信息</a></li>
+								<li><a th:href="@{/sys/user/modifyPwd}" target="mainFrame"><i class="icon-lock"></i>&nbsp;  修改密码</a></li>
+							</ul>
+						</li>
+						<li><a th:href="@{'/logout?t=' + ${new java.util.Date().getTime()}}" title="退出登录">退出</a></li>
+						<li>&nbsp;</li>
+					</ul>
+					
+					<div class="nav-collapse">
+						<ul id="menu" class="nav" style="*white-space:nowrap;float:none;">
+							<li class="menu" th:each="menu, idxStatus : ${menus}" th:if="${menu.parent.id eq '1' and menu.isShow eq '1'}">
+								<a class="menu" th:if="${#strings.isEmpty(menu.href)}" href="javascript:" th:data-href="@{'/sys/menu/tree?parentId=' + ${menu.id}}" th:data-id="${menu.id}"><span th:text="${menu.name}"></span></a>
+								<a class="menu" th:if="!${#strings.isEmpty(menu.href)}" th:href="@{${menu.href}}" th:data-id="${menu.id}" target="mainFrame"><span th:text="${menu.name}"></span></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+		    </div>
+		    <div class="container-fluid">
+				<div id="content" class="row-fluid">
+					<div id="left">
+					</div>
+					<div id="openClose" class="close">&nbsp;</div>
+					<div id="right">
+						<iframe id="mainFrame" name="mainFrame" src="" style="overflow:visible;" scrolling="yes" frameborder="no" width="100%" height="650"></iframe>
+					</div>
+				</div>
+			    <div id="footer" class="row-fluid">
+		            Copyright &copy; 2012-2019 spring boot - Powered By <a href="http://spring.io" target="_blank">http://spring.io</a> v1.0
+				</div>
+			</div>
+		</div>
+		<script th:src="@{/static/app/js/index.js}" src="/static/app/js/index.js" type="text/javascript"></script>
+		<script th:src="@{/static/common/wsize.min.js}" src="/static/common/wsize.min.js" type="text/javascript"></script>
+	</body>
+</html>

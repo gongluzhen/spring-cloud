@@ -1,0 +1,129 @@
+<div th:fragment="file-upload(businessTableName, businessKey, multiple, allowedFileTypes, maxFileCount, readonly)">
+	<input id="kv-explorer" type="file" th:multiple="${multiple}">
+	<input id="fileIds" name="fileIds" type="hidden">
+	<script type="text/javascript">
+		$.ajax({
+			type: 'POST',
+			dataType: 'json',
+			async: true,
+			url: ctx + 'sys/sysFile/all',
+			data: {
+				'businessKey': '[[${businessKey}]]'
+			},
+			timeout: 1000 * 60,
+			error: function () {
+				alertx("数据加载失败！");
+			},
+			success: function (data) {
+				var initialPreview = [], initialPreviewConfig = [], fileIds = [];
+				if(data != null){
+					$.each(data, function(i, o){
+						initialPreview.push(ctx + 'sys/sysFile/downLoad?id=' + o.id);
+						initialPreviewConfig.push({
+							caption : o.name,
+							size : o.size,
+							downloadUrl: ctx + 'sys/sysFile/downLoad?id=' + o.id,
+							extra: {id: o.id}
+						});
+						fileIds.push(o.id);
+					});
+					$("#fileIds").val(fileIds.join(","));
+				}
+				
+				$("#kv-explorer").fileinput({
+					language: 'zh',
+					showClose: false,
+					showRemove: false,
+					removeIcon: '<i class="icon-trash"></i>',
+					browseIcon: '<i class="icon-folder-open"></i>&nbsp;',
+					uploadIcon: '<i class="icon-upload"></i>',
+					cancelIcon: '<i class="icon-ban-circle"></i>',
+					fileActionSettings: {
+						showDrag: false,
+						downloadTitle: '下载文件',
+						removeIcon: '<i class="icon-trash"></i>',
+						uploadIcon: '<i class="icon-upload-alt"></i>',
+						uploadRetryIcon: '<i class="icon-repeat"></i>',
+						downloadIcon: '<i class="icon-download-alt"></i>',
+						zoomIcon: '<i class="icon-zoom-in"></i>',
+					},
+					previewZoomButtonIcons: {
+						prev: '<i class="icon-chevron-left"></i>',
+						next: '<i class="icon-chevron-right"></i>',
+						toggleheader: '<i class="icon-resize-vertical"></i>',
+						fullscreen: '<i class="icon-fullscreen"></i>',
+						borderless: '<i class="icon-external-link"></i>',
+						close: '<i class="icon-remove"></i>'
+					},
+					allowedPreviewTypes: ['image', 'html', 'text', 'video', 'audio', 'flash'],
+					allowedFileTypes: '[[${allowedFileTypes}]]'.split(","),
+					uploadUrl: ctx + 'sys/sysFile/upload',
+					deleteUrl: ctx + 'sys/sysFile/virtualDelete',
+					uploadExtraData: {
+						businessTableName: '[[${businessTableName}]]'
+					},
+					overwriteInitial : false,
+					initialPreviewAsData : true,
+					initialPreview : initialPreview,
+					initialPreviewConfig : initialPreviewConfig
+				});
+				
+				$('#kv-explorer').on('fileuploaded', function(event, data, previewId, index) {
+					var frames = $('#kv-explorer').fileinput('getFrames');
+					$(frames[index]).attr("data-id", data.response.paths);
+					
+					//单文件上传
+					if(![[${multiple}]]){
+						$("#fileIds").val(data.response.paths);
+					} else {
+						var fileIds = $("#fileIds").val();
+						if(fileIds == null || fileIds == ''){
+							fileIds = data.response.paths;
+						} else {
+							fileIds = fileIds + ',' + data.response.paths;	
+						}
+						$("#fileIds").val(fileIds);
+					}
+				});
+				$('#kv-explorer').on('fileselect', function(event, numFiles, label) {
+					var frames = $('#kv-explorer').fileinput('getFrames');
+					var fileCount = frames.length;;
+					var _maxFileCount = [[${maxFileCount}]];
+					//单文件上传
+					if(![[${multiple}]]){
+						_maxFileCount = 1;
+					}
+					if(fileCount > _maxFileCount){
+						if(![[${multiple}]]){
+							frames[0].remove();
+						} else {
+							for(var i = fileCount; i > _maxFileCount; i --){
+								frames[i - 1].remove();
+							}
+						}
+					}
+					
+					$('#kv-explorer').fileinput('_resetFileStack');
+				});
+				
+				$('#kv-explorer').on('filesuccessremove', function(event, id, index) {
+					debugger;
+					var fileId = $("#" + id).attr("data-id");
+					var array = $("#fileIds").val().split(",");
+					array.remove(fileId)
+					$("#fileIds").val(array.join(","));
+				});
+				
+				$('#kv-explorer').on('filedeleted', function(event, key, jqXHR, data) {
+					var array = $("#fileIds").val().split(",");
+					array.remove(data.id)
+					$("#fileIds").val(array.join(","));
+				});
+				
+				if([[${readonly}]]){
+					$('#kv-explorer').fileinput('disable');
+				}
+			}
+		});
+	</script>
+</div>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sapit.springcloud.server.sys.dao.SysWxAccessTokenDao">
+    
+	<sql id="sysWxAccessTokenColumns">
+		a.id AS "id",
+		a.access_token AS "accessToken",
+		a.jsapi_ticket AS "jsapiTicket",
+		a.expires_in AS "expiresIn",
+		a.create_time AS "createTime",
+		a.app_id AS "appId"
+	</sql>
+	
+	<sql id="sysWxAccessTokenJoins">
+	</sql>
+    
+	<select id="get" resultType="SysWxAccessToken">
+		SELECT 
+			<include refid="sysWxAccessTokenColumns"/>
+		FROM sys_wx_access_token a
+		<include refid="sysWxAccessTokenJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysWxAccessToken">
+		SELECT 
+			<include refid="sysWxAccessTokenColumns"/>
+		FROM sys_wx_access_token a
+		<include refid="sysWxAccessTokenJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysWxAccessToken">
+		SELECT 
+			<include refid="sysWxAccessTokenColumns"/>
+		FROM sys_wx_access_token a
+		<include refid="sysWxAccessTokenJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_wx_access_token(
+			id,
+			access_token,
+			jsapi_ticket,
+			expires_in,
+			create_time,
+			app_id
+		) VALUES (
+			#{id},
+			#{accessToken},
+			#{jsapiTicket},
+			#{expiresIn},
+			#{createTime},
+			#{appId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_wx_access_token SET 	
+			access_token = #{accessToken},
+			jsapi_ticket = #{jsapiTicket},
+			expires_in = #{expiresIn},
+			create_time = #{createTime},
+			app_id = #{appId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sys_wx_access_token
+		WHERE id = #{id}
+	</update>
+	
+	
+	<select id="getByAppId" resultType="SysWxAccessToken">
+		SELECT 
+			<include refid="sysWxAccessTokenColumns"/>
+		FROM sys_wx_access_token a
+		<include refid="sysWxAccessTokenJoins"/>
+		WHERE app_id = #{appId}
+	</select>
+	
+</mapper>

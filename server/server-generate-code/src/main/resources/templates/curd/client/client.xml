@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>client</name>
+	<filePath>client/client-${moduleProjectName}/src/main/java/${basePackageName}/client/${moduleName}</filePath>
+	<fileName>${ClassName}Client.java</fileName>
+	<content><![CDATA[
+package ${basePackageName}.client.${moduleName};
+
+import java.util.List;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import ${basePackageName}.common.client.FeignConfig;
+import ${basePackageName}.moudle.Page;
+import ${basePackageName}.moudle.${moduleName}.${ClassName};
+
+/**
+ * ${functionName}Client
+ * @author ${functionAuthor}
+ * @version ${functionVersion}
+ */
+
+@Component
+@FeignClient(value = "server-${moduleProjectName}", path = "${className}", configuration = FeignConfig.class)
+public interface ${ClassName}Client {
+
+	@RequestMapping(value = "getById", method = RequestMethod.POST)
+	public ${ClassName} getById(@RequestBody String id);
+
+	@RequestMapping(value = "get", method = RequestMethod.POST)
+	public ${ClassName} get(@RequestBody ${ClassName} ${className});
+
+	@RequestMapping(value = "findList", method = RequestMethod.POST)
+	public List<${ClassName}> findList(@RequestBody ${ClassName} ${className});
+
+	@RequestMapping(value = "findPage", method = RequestMethod.POST)
+	public Page<${ClassName}> findPage(@RequestBody ${ClassName} ${className});
+
+	@RequestMapping(value = "save", method = RequestMethod.POST)
+	public ${ClassName} save(@RequestBody ${ClassName} ${className});
+
+	@RequestMapping(value = "delete", method = RequestMethod.POST)
+	public void delete(@RequestBody ${ClassName} ${className});
+}]]>
+	</content>
+</template>

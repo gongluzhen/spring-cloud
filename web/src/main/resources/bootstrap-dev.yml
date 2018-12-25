@@ -1,0 +1,7 @@
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5 #Indicates how often(in seconds) to fetch the registry information from the eureka server.
+    serviceUrl:
+      defaultZone: http://192.168.1.10:1001/eureka/

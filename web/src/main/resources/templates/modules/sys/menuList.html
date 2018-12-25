@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script th:src="@{/static/app/js/modules/sys/menuList.js}" type="text/javascript"></script>
+		<link th:href="@{/static/treeTable/themes/vsStyle/treeTable.min.css}" rel="stylesheet" type="text/css" />
+		<script th:src="@{/static/treeTable/jquery.treeTable.js}" type="text/javascript"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li class="active"><a th:href="@{/sys/menu}">菜单列表</a></li>
+			<li shiro:hasPermission="sys:menu:edit"><a th:href="@{/sys/menu/form}">菜单添加</a></li>
+		</ul>
+		<div th:include="common/message :: message(${message}, null)"></div>
+		<form id="listForm" method="post">
+			<table id="treeTable" class="table table-striped table-bordered table-condensed hide">
+				<thead>
+					<tr>
+						<th>名称</th>
+						<th>链接</th>
+						<th style="text-align:center;">排序</th>
+						<th>可见</th>
+						<th>权限标识</th>
+						<th shiro:hasPermission="sys:menu:edit">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="menu: ${list}" th:id="${menu.id}" th:pId="${menu.parent.id != '1' ? menu.parent.id : '0'}">
+						<td nowrap>
+							<i th:class="'icon-' + ${#strings.isEmpty(menu.icon) ? 'hide' : menu.icon}"></i>
+							<a th:href="@{'/sys/menu/form?id=' + ${menu.id}}" th:text="${menu.name}"></a>
+						</td>
+						<td th:title="${menu.href}" th:text="${#common.abbr(menu.href, 30)}"></td>
+						<shiro:hasPermission name="sys:menu:edit">
+							<td style="text-align:center;">
+								<input type="hidden" name="ids" th:value="${menu.id}"/>
+								<input name="sorts" type="text" th:value="${menu.sort}" style="width:50px;margin:0;padding:0;text-align:center;">
+							</td>
+						</shiro:hasPermission>
+						<shiro:lacksPermission name="sys:menu:edit">
+							<td style="text-align:center;" th:text="${menu.sort}"></td>
+						</shiro:lacksPermission>
+						<td th:text="${menu.isShow == '1' ? '显示' : '隐藏'}"></td>
+						<td th:title="${menu.permission}" th:text="${#common.abbr(menu.permission, 30)}"></td>
+						<shiro:hasPermission name="sys:menu:edit">
+							<td nowrap>
+								<a th:href="@{'/sys/menu/form?id=' + ${menu.id}}">修改</a>
+								<a th:href="@{'/sys/menu/delete?id=' + ${menu.id}}" onclick="return confirmx('要删除该菜单及所有子菜单项吗？', this.href)">删除</a>
+								<a th:href="@{'/sys/menu/form?parent.id=' + ${menu.id}}">添加下级菜单</a> 
+							</td>
+						</shiro:hasPermission>
+					</tr>
+				</tbody>
+			</table>
+			<shiro:hasPermission name="sys:menu:edit">
+				<div class="form-actions pagination-left">
+					<input id="btnSubmit" class="btn btn-primary" type="button" value="保存排序" onclick="updateSort();"/>
+				</div>
+			</shiro:hasPermission>
+		 </form>
+	</body>
+</html>

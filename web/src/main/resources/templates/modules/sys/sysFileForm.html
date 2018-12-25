@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/sys/sysFileForm.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li>
+				<a th:href="@{/sys/sysFile}">系统-附件表列表</a>
+			</li>
+			<li class="active">
+				<a shiro:hasPermission="sys:sysFile:edit" th:text="'系统-附件表' + ${#strings.isEmpty(sysFile.id) ? '添加' : '修改'}" th:href="@{'/sys/sysFile/form?id=' + ${sysFile.id}}"></a>
+				<a shiro:lacksPermission="sys:sysFile:edit" th:href="@{'/sys/sysFile/form?id=' + ${sysFile.id}}">系统-附件表查看</a>
+			</li>
+		</ul><br/>
+		<form id="inputForm" modelAttribute="sysFile" th:action="@{/sys/sysFile/save}" method="post" class="form-horizontal">
+			<input type="hidden" id="id" name="id" th:value="${sysFile.id}" />
+			<div th:include="common/message :: message(${message}, null)"></div>
+			<div class="control-group">
+				<label class="control-label">名称：</label>
+				<div class="controls" >
+					<input id="name" name="name" type="text" th:value="${sysFile.name}" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">类型：</label>
+				<div class="controls" >
+					<input id="contentType" name="contentType" type="text" th:value="${sysFile.contentType}" htmlEscape="false" maxlength="100" class="input-xlarge required"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">大小（byte）：</label>
+				<div class="controls" >
+					<input id="size" name="size" type="text" th:value="${sysFile.size}" htmlEscape="false" maxlength="11" class="input-xlarge "/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">业务表名称：</label>
+				<div class="controls" >
+					<input id="businessTableName" name="businessTableName" type="text" th:value="${sysFile.businessTableName}" htmlEscape="false" maxlength="200" class="input-xlarge required"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">业务表主键：</label>
+				<div class="controls" >
+					<input id="businessKey" name="businessKey" type="text" th:value="${sysFile.businessKey}" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">备注信息：</label>
+				<div class="controls" >
+					<textarea id="remarks" name="remarks" th:text="${sysFile.remarks}" htmlEscape="false" rows="4" maxlength="255" class="input-xxlarge "/>
+				</div>
+			</div>
+			<div class="form-actions">
+				<input shiro:hasPermission="sys:sysFile:edit" id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			</div>
+		</form>
+	</body>
+</html>

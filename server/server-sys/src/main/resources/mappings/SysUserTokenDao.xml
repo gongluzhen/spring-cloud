@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sapit.springcloud.server.sys.dao.SysUserTokenDao">
+    
+	<sql id="sysUserTokenColumns">
+		a.id AS "id",
+		a.user_id AS "user.id",
+		a.token_id AS "tokenId",
+		a.active_time AS "activeTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		u2.name AS "user.name"
+	</sql>
+	
+	<sql id="sysUserTokenJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.user_id
+	</sql>
+    
+	<select id="get" resultType="SysUserToken">
+		SELECT 
+			<include refid="sysUserTokenColumns"/>
+		FROM sys_user_token a
+		<include refid="sysUserTokenJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="id != null and id != ''">
+			AND a.id = #{id}
+		</if>
+	</select>
+	
+	<select id="findList" resultType="SysUserToken">
+		SELECT 
+			<include refid="sysUserTokenColumns"/>
+		FROM sys_user_token a
+		<include refid="sysUserTokenJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysUserToken">
+		SELECT 
+			<include refid="sysUserTokenColumns"/>
+		FROM sys_user_token a
+		<include refid="sysUserTokenJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="user != null and user.id != null and user.id != ''">
+				AND a.user_id = #{user.id}
+			</if>
+			<if test="tokenId != null and tokenId != ''">
+				AND a.token_id = #{tokenId}
+			</if>
+			<if test="mobileLoginTimeout != null and mobileLoginTimeout != ''">
+				AND a.active_time >= DATE_SUB(now(), INTERVAL #{mobileLoginTimeout} MINUTE)
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_user_token(
+			id,
+			user_id,
+			token_id,
+			active_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{user.id},
+			#{tokenId},
+			#{activeTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_user_token SET 	
+			user_id = #{user.id},
+			token_id = #{tokenId},
+			active_time = #{activeTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_user_token SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 通过tokenId进行物理删除 -->
+	<delete id="realDelete">
+		DELETE
+		FROM
+			sys_user_token
+		WHERE
+			sys_user_token.token_id = #{tokenId}
+	</delete>
+</mapper>

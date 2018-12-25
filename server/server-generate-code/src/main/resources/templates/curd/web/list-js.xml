@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>form-js</name>
+	<filePath>web/src/main/resources/static/app/js/modules/${moduleName}</filePath>
+	<fileName>${className}List.js</fileName>
+	<content><![CDATA[
+$(document).ready(function() {
+	
+});
+function page(n,s){
+	$("#pageNo").val(n);
+	$("#pageSize").val(s);
+	$("#searchForm").submit();
+	
+	return false;
+}
+]]>
+	</content>
+</template>

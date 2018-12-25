@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sapit.springcloud.server.sys.dao.SysFileDao">
+	<sql id="sysFileColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.content_type AS "contentType",
+		a.size AS "size",
+		a.business_table_name AS "businessTableName",
+		a.business_key AS "businessKey",
+		a.create_by AS "createBy.id",
+		createUser.name AS "createBy.name",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="sysFileJoins">
+		LEFT JOIN sys_user createUser ON createUser.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="SysFile">
+		SELECT 
+			<include refid="sysFileColumns"/>
+		FROM sys_file a
+		<include refid="sysFileJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysFile">
+		SELECT 
+			<include refid="sysFileColumns"/>
+		FROM sys_file a
+		<include refid="sysFileJoins"/>
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				AND a.del_flag = #{delFlag}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="contentType != null and contentType != ''">
+				AND a.content_type LIKE 
+					<if test="dbName == 'oracle'">'%'||#{contentType}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{contentType}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{contentType},'%')</if>
+			</if>
+			<if test="businessTableName != null and businessTableName != ''">
+				AND a.business_table_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{businessTableName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{businessTableName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{businessTableName},'%')</if>
+			</if>
+			<if test="businessKey != null and businessKey != ''">
+				AND a.business_key = #{businessKey}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysFile">
+		SELECT 
+			<include refid="sysFileColumns"/>
+		FROM sys_file a
+		<include refid="sysFileJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_file(
+			id,
+			name,
+			content_type,
+			size,
+			business_table_name,
+			business_key,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{name},
+			#{contentType},
+			#{size},
+			#{businessTableName},
+			#{businessKey},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_file SET 	
+			name = #{name},
+			content_type = #{contentType},
+			size = #{size},
+			business_table_name = #{businessTableName},
+			business_key = #{businessKey},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_file SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateBusinessKeyByIds">
+		UPDATE sys_file SET 
+			del_flag = '0',
+			business_key = #{businessKey}
+		WHERE id in 
+		<foreach collection="fileIds" item="str"  open="(" separator="," close=")">
+			#{str}
+		</foreach>
+	</update>
+	
+	<update id="deleteByBusinessKey">
+		UPDATE sys_file SET 
+			del_flag = '1'
+		WHERE business_key = #{businessKey}
+	</update>
+</mapper>

@@ -1,0 +1,47 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /spring-cloud
+  session:
+    timeout: 7200
+  tomcat:
+    uri-encoding: utf-8
+    max-threads: 1000
+    max-connections: 1000
+spring:
+  mvc:
+    static-path-pattern : /static/**
+  profiles:    
+    active: default
+  thymeleaf:
+    mode: LEGACYHTML5
+    cache: false
+    encoding: utf-8
+    suffix: .html
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: true  #启动重试机制
+ribbon:
+  ConnectTimeout: 5000 #连接超时 5s
+  ReadTimeout: 300000 #读取超时 5m
+  MaxAutoRetries: 0 #同一台实例最大重试次数,不包括首次调用
+  MaxAutoRetriesNextServer: 2 #重试负载均衡其他的实例最大重试次数,不包括首次调用
+  OkToRetryOnAllOperations: true  #是否所有操作(POST GET)都重试 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+logging:
+  config: classpath:logback-spring.xml
+feign: 
+  httpclient: 
+    enabled: true #默认是java.net.HttpURLConnection,改为httpclient

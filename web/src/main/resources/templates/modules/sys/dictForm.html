@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/sys/dictForm.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li>
+				<a th:href="@{/sys/dict}">字典列表</a>
+			</li>
+			<li class="active">
+				<a shiro:hasPermission="sys:dict:edit" th:text="'字典' + ${#strings.isEmpty(dict.id) ? '添加' : '修改'}" th:href="@{'/sys/dict/form?id=' + ${dict.id}}"></a>
+				<a shiro:lacksPermission="sys:dict:edit" th:href="@{'/sys/dict/form?id=' + ${dict.id}}">字典查看</a>
+			</li>
+		</ul><br/>
+		<form id="inputForm" modelAttribute="dict" th:action="@{/sys/dict/save}" method="post" class="form-horizontal">
+			<input type="hidden" id="id" name="id" th:value="${dict.id}" />
+			<div th:include="common/message :: message(${message}, null)"></div>
+			<div class="control-group">
+				<label class="control-label">键值:</label>
+				<div class="controls">
+					<input id="value" name="value" type="text" th:value="${dict.value}" htmlEscape="false" maxlength="50" class="required"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">标签:</label>
+				<div class="controls">
+					<input id="label" name="label" type="text" th:value="${dict.label}" htmlEscape="false" maxlength="50" class="required"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">类型:</label>
+				<div class="controls">
+					<input id="type" name="type" type="text" th:value="${dict.type}" htmlEscape="false" maxlength="50" class="required abc"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">描述:</label>
+				<div class="controls">
+					<input id="description" name="description" type="text" th:value="${dict.description}" htmlEscape="false" maxlength="50" class="required"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">排序:</label>
+				<div class="controls">
+					<input id="sort" name="sort" type="text" th:value="${dict.sort}" htmlEscape="false" maxlength="11" class="required digits"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">备注:</label>
+				<div class="controls">
+					<textarea id="remarks" name="remarks" th:text="${dict.remarks}" htmlEscape="false" rows="3" maxlength="200" class="input-xlarge"/>
+				</div>
+			</div>
+			<div class="form-actions">
+				<input shiro:hasPermission="sys:dict:edit" id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			</div>
+		</form>
+	</body>
+</html>

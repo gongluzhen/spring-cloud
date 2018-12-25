@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/sys/userForm.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li><a th:href="@{/sys/user/list}">用户列表</a></li>
+			<li class="active">
+				<a shiro:hasPermission="sys:user:edit" th:text="'用户' + ${#strings.isEmpty(user.id) ? '添加' : '修改'}" th:href="@{'/sys/user/form?id=' + ${user.id}}"></a>
+				<a shiro:lacksPermission="sys:user:edit" th:href="@{'/sys/user/form?id=' + ${user.id}}">用户查看</a>
+			</li>
+		</ul><br/>
+		<form id="inputForm" modelAttribute="user" th:action="@{/sys/user/save}" method="post" class="form-horizontal">
+			<input type="hidden" id="id" name="id" th:value="${user.id}" />
+			<input id="oldLoginName" name="oldLoginName" type="hidden" th:value="${user.loginName}">
+			<div th:include="common/message :: message(${message}, null)"></div>
+			<div id="office_div" class="control-group">
+				<label class="control-label">归属机构:</label>
+				<div class="controls">
+					<span th:include="common/tree-select :: tree-select('office', 'office.id', ${user.office.id}, 'office.name', ${user.office.name}, '机构', '/sys/office/treeData', '', 'treeselect-xlarge required', false)"></span>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">工号（编号）:</label>
+				<div class="controls">
+					<input id="no" name="no" type="text" th:value="${user.no}" htmlEscape="false" maxlength="50" class="input-xlarge required"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">姓名:</label>
+				<div class="controls">
+					<input id="name" name="name" type="text" th:value="${user.name}" htmlEscape="false" maxlength="50" class="input-xlarge required"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">登录名:</label>
+				<div class="controls">
+					<input id="loginName" name="loginName" type="text" th:value="${user.loginName}" htmlEscape="false" maxlength="50" class="input-xlarge required"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">密码:</label>
+				<div class="controls">
+					<input id="newPassword" name="newPassword" type="password" value="" maxlength="50" minlength="6" th:class="'input-xlarge abc ' + ${#strings.isEmpty(user.id) ? 'required' : ''}"/>
+					<span th:if="${#strings.isEmpty(user.id)}" class="help-inline"><font color="red">*</font> </span>
+					<span th:unless="${#strings.isEmpty(user.id)}" class="help-inline">若不修改密码，请留空。</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">确认密码:</label>
+				<div class="controls">
+					<input id="confirmNewPassword" name="confirmNewPassword" type="password" class="input-xlarge abc" value="" maxlength="50" minlength="6" equalTo="#newPassword"/>
+					<span th:if="${#strings.isEmpty(user.id)}" class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">邮箱:</label>
+				<div class="controls">
+					<input id="email" name="email" type="text" th:value="${user.email}" htmlEscape="false" maxlength="100" class="input-xlarge required email"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">手机号码:</label>
+				<div class="controls">
+					<input id="mobile" name="mobile" type="text" th:value="${user.mobile}" htmlEscape="false" maxlength="100" class="input-xlarge isMobile" />
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">是否允许登录:</label>
+				<div class="controls">
+					<select id="loginFlag" name="loginFlag" th:value="${user.loginFlag}"  class="input-medium">
+						<option th:each="dict: ${#common.getDictList('yes_no')}" th:value="${dict.value}" th:text="${dict.label}" th:selected="${user.loginFlag == dict.value}" htmlEscape="false"/>
+					</select>
+					<span class="help-inline"><font color="red">*</font> “是”代表此账号允许登录，“否”则表示此账号不允许登录</span>
+				</div>
+			</div>
+			<div id="roleIdList_div" class="control-group">
+				<label class="control-label">用户角色:</label>
+				<div class="controls">
+					<span th:each="role, roleS : ${allRoles}">
+						<input type="checkbox" th:id="'roleIdList' + ${roleS.index}" name="roleIdList" th:value="${role.id}" th:checked="${#common.isCheckboxChecked(user.roleIdList, role.id)}" class="required" />
+						<label th:for="'roleIdList' + ${roleS.index}" th:text="${role.name}"></label>
+					</span>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">备注:</label>
+				<div class="controls">
+					<textarea id="remarks" name="remarks" th:text="${user.remarks}" htmlEscape="false" rows="3" maxlength="200" class="input-xlarge"/>
+				</div>
+			</div>
+			<div class="control-group" th:unless="${#strings.isEmpty(user.id)}">
+				<label class="control-label">创建时间:</label>
+				<div class="controls">
+					<label class="lbl" th:text="${#common.formatDate(user.createDate, 'yyyy-MM-dd HH:mm:ss')}"></label>
+				</div>
+			</div>
+			<div class="control-group" th:unless="${#strings.isEmpty(user.id)}">
+				<label class="control-label">最后登陆:</label>
+				<div class="controls">
+					<label class="lbl" th:text="'IP: ' + ${#strings.isEmpty(user.loginIp) ? '' : user.loginIp} + '&nbsp;&nbsp;&nbsp;&nbsp;时间：' + ${#common.formatDate(user.loginDate, 'yyyy-MM-dd HH:mm:ss')}"></label>
+				</div>
+			</div>
+			<div class="form-actions">
+				<shiro:hasPermission name="sys:user:edit">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				</shiro:hasPermission>
+				<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			</div>
+		</form>
+	</body>
+</html>

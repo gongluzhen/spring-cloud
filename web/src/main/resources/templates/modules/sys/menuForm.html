@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/sys/menuForm.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li>
+				<a th:href="@{/sys/menu}">菜单列表</a>
+			</li>
+			<li class="active">
+				<a shiro:hasPermission="sys:menu:edit" th:text="'菜单' + ${#strings.isEmpty(menu.id) ? '添加' : '修改'}" th:href="@{'/sys/menu/form?id=' + ${menu.id} + '&parent.id=' + ${menu.parent.id}}"></a>
+				<a shiro:lacksPermission="sys:menu:edit" th:href="@{'/sys/menu/form?id=' + ${menu.id} + '&parent.id=' + ${menu.parent.id}}">菜单查看</a>
+			</li>
+		</ul><br/>
+		<form id="inputForm" modelAttribute="menu" th:action="@{/sys/menu/save}" method="post" class="form-horizontal">
+			<input type="hidden" id="id" name="id" th:value="${menu.id}" />
+			<div th:include="common/message :: message(${message}, null)"></div>
+			<div class="control-group">
+				<label class="control-label">上级菜单:</label>
+				<div class="controls">
+					<div th:include="common/tree-select :: tree-select('menu', 'parent.id', ${menu.parent.id}, 'parent.name', ${menu.parent.name}, '菜单', 'sys/menu/treeData', ${menu.id}, 'required', false)"></div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">名称:</label>
+				<div class="controls">
+					<input id="name" name="name" type="text" th:value="${menu.name}" htmlEscape="false" maxlength="50" class="required input-xlarge"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">链接:</label>
+				<div class="controls">
+					<input id="href" name="href" type="text" th:value="${menu.href}" htmlEscape="false" maxlength="2000" class="input-xxlarge"/>
+					<span class="help-inline">点击菜单跳转的页面</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">目标:</label>
+				<div class="controls">
+					<input id="target" name="target" type="text" th:value="${menu.target}" htmlEscape="false" maxlength="10" class="input-small"/>
+					<span class="help-inline">链接地址打开的目标窗口，默认：mainFrame</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">图标:</label>
+				<div class="controls">
+					<div th:include="common/icon-select :: icon-select('icon', 'icon', ${menu.icon})"></div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">排序:</label>
+				<div class="controls">
+					<input id="sort" name="sort" type="text" th:value="${menu.sort}" htmlEscape="false" maxlength="50" class="required digits input-small"/>
+					<span class="help-inline">排列顺序，升序。</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">可见:</label>
+				<div class="controls" style="padding-top: 5px;">
+					<span th:each="dict, dictS : ${#common.getDictList('show_hide')}">
+						<input type="radio" th:id="'isShow' + ${dictS.index}" name="isShow" th:value="${dict.value}" th:checked="${dict.value == menu.isShow}" class="required" />
+						<label th:for="'isShow' + ${dictS.index}" th:text="${dict.label}"></label>
+					</span>
+					<span class="help-inline">该菜单或操作是否显示到系统菜单中</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">权限标识:</label>
+				<div class="controls">
+					<input id="permission" name="permission" type="text" th:value="${menu.permission}" htmlEscape="false" maxlength="100" class="input-xxlarge"/>
+					<span class="help-inline">控制器中定义的权限标识，如：@RequiresPermissions("权限标识")</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">备注:</label>
+				<div class="controls">
+					<textarea id="remarks" name="remarks" th:text="${menu.remarks}" htmlEscape="false" rows="3" maxlength="200" class="input-xxlarge"/>
+				</div>
+			</div>
+			<div class="form-actions">
+				<shiro:hasPermission name="sys:menu:edit">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				</shiro:hasPermission>
+				<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			</div>
+		</form>
+	</body>
+</html>

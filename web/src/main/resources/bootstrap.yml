@@ -1,0 +1,18 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: web
+  profiles:
+    active: '@profiles.active@'
+  cloud:
+    config:
+      fail-fast: true
+      profile: '@profiles.active@'
+      discovery:
+        enabled: true
+        service-id: server-config
+  bus:
+    enabled: true
+    trace:
+      enabled: true

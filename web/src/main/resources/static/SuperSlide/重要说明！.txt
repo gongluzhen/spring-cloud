@@ -1,0 +1,25 @@
+/*!
+ * SuperSlide v2.1 
+ * ���ɽ����վ�󲿷���Чչʾ����
+ * �꾡��Ϣ�뿴������http://www.SuperSlide2.com/
+ *
+ * Copyright 2011-2013, ����ϯ
+ *
+ * ������ԭ��������ͷ����Ȩ
+ * �ڱ�����Ȩ��ǰ���¿�Ӧ���ڸ��˻���ҵ��;
+ */
+
+
+1��jquery.SuperSlide.2.1.js Ϊѹ������ļ�
+2��jquery.SuperSlide.2.1.source.js ΪԴ�����ļ�
+3��businessIntegration�ļ���Ϊ���л���Ч��ʾ�������� businessIntegration/1.0-switchTab.html Ϊtab�л�����ʾ��
+4��businessIntegration/iframe �ļ��в����ǻ���ʾ��������ԣ���
+
+
+����㹺������չЧ�������ῴ�������ļ���
+
+5��otherbusinessIntegration�ļ���Ϊ������չЧ��ʾ��
+6��syntaxhighlighter �ļ���Ϊ������ɫ��������Ժ���
+
+
+��л����֧�֣�

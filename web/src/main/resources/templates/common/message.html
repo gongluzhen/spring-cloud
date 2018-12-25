@@ -1,0 +1,28 @@
+<div th:fragment="message(content, type)">
+	<div th:if="!${#strings.isEmpty(content)}">
+		<script type="text/javascript">
+			$.jBox.closeTip();
+		</script>
+		<div id="messageBox" th:class="'alert alert-' + ${#strings.isEmpty(type) ? ((#strings.isEmpty(content) or #strings.indexOf(content, '失败') eq -1) ? 'success' : 'error') : type} + ' hide'">
+			<button data-dismiss="alert" class="close">×</button>
+			<div th:utext="${content}"></div>
+		</div>
+		<script type="text/javascript">
+			var ctype = "";
+			if("[[${type}]]" == "null" || "[[${type}]]" == ""){
+				ctype = ("[[${content}]]".indexOf("失败") == -1) ? "success" : "error";
+			} else {
+				ctype = "[[${type}]]";
+			}
+			
+			if (!$.jBox.tip.mess) {
+				$.jBox.tip.mess = 1;
+				$.jBox.tip("[[${content}]]", ctype, {
+					persistent : true,
+					opacity : 0
+				});
+				$("#messageBox").show();
+			}
+		</script>
+	</div>
+</div>

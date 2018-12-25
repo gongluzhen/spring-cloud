@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sapit.springcloud.server.sys.dao.SysSequenceDao">
+    
+	<sql id="sysSequenceColumns">
+		a.seq_name AS "seqName",
+		a.prefix AS "prefix",
+		a.current_val AS "currentVal"
+	</sql>
+	
+	<sql id="sysSequenceJoins">
+	</sql>
+    
+	<select id="get" resultType="SysSequence">
+		SELECT 
+			<include refid="sysSequenceColumns"/>
+		FROM sys_sequence a
+		<include refid="sysSequenceJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getSequenceNextValue" parameterType="java.util.HashMap" statementType="CALLABLE">
+	    <![CDATA[
+	    	{	    		
+	           	call sequence_next (
+		            #{seq_name_p, mode=IN, jdbcType=VARCHAR},
+		            #{prefix_p, mode=IN, jdbcType=VARCHAR},
+		            #{suffix_num_p, mode=IN, jdbcType=BIGINT},
+		            #{result, mode=OUT, jdbcType=VARCHAR}
+            	)
+        	}
+	    ]]>
+ 	</select>
+	
+	<select id="findList" resultType="SysSequence">
+		SELECT 
+			<include refid="sysSequenceColumns"/>
+		FROM sys_sequence a
+		<include refid="sysSequenceJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysSequence">
+		SELECT 
+			<include refid="sysSequenceColumns"/>
+		FROM sys_sequence a
+		<include refid="sysSequenceJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_sequence(
+			seq_name,
+			prefix,
+			current_val
+		) VALUES (
+			#{seqName},
+			#{prefix},
+			#{currentVal}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_sequence SET 	
+			seq_name = #{seqName},
+			prefix = #{prefix},
+			current_val = #{currentVal}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sys_sequence
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

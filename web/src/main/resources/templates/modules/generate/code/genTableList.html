@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<title>业务表管理</title>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/generate/code/genTableList.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li class="active"><a th:href="@{/gen/genTable}">业务表列表</a></li>
+			<li shiro:hasPermission="gen:genTable:edit"><a th:href="@{/gen/genTable/form}">业务表添加</a></li>
+		</ul>
+		<form id="searchForm" modelAttribute="genTable" th:action="@{/gen/genTable}" method="post" class="breadcrumb form-search">
+			<input id="pageNo" name="pageNo" type="hidden" th:value="${page.pageNo}"/>
+			<input id="pageSize" name="pageSize" type="hidden" th:value="${page.pageSize}"/>
+			<div th:include="common/table-sort:: table-sort('orderBy', 'orderBy', ${page.orderBy}, 'page();')"></div>
+			<label>表名：</label><input id="nameLike" th:value="${genTable.nameLike}" name="nameLike" type="text" htmlEscape="false" maxlength="50" class="input-medium"/>
+			<label>说明：</label><input id="comments" th:value="${genTable.comments}" name="comments" type="text" htmlEscape="false" maxlength="50" class="input-medium"/>
+			<label>父表表名：</label><input id="parentTable" th:value="${genTable.parentTable}" name="parentTable" type="text" htmlEscape="false" maxlength="50" class="input-medium"/>
+			&nbsp;<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+		</form>
+		<div th:include="common/message :: message(${message}, null)"></div>
+		<table id="contentTable" class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th class="sort-column name">表名</th>
+					<th>说明</th>
+					<th class="sort-column class_name">类名</th>
+					<th class="sort-column parent_table">父表</th>
+					<th shiro:hasPermission="gen:genTable:edit">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="genTable : ${page.list}">
+					<td>
+						<a th:href="@{'/gen/genTable/form?id=' + ${genTable.id}}" th:text="${genTable.name}"></a>
+					</td>
+					<td th:text="${genTable.comments}"></td>
+					<td th:text="${genTable.className}"></td>
+					<td title="点击查询子表">
+						<a href="javascript:" th:onclick="queryParentTable([[${genTable.parentTable}]])" th:text="${genTable.parentTable}"></a>
+					</td>
+					<td shiro:hasPermission="gen:genTable:edit">
+	    				<a th:href="@{'/gen/genTable/form?id=' + ${genTable.id}}">修改</a>
+						<a th:href="@{'/gen/genTable/delete?id=' + ${genTable.id}}" onclick="return confirmx('确认要删除该业务表吗？', this.href)">删除</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="pagination" th:utext="${page}"></div>
+	</body>
+</html>

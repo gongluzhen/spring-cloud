@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<title>业务表管理</title>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/generate/code/genSchemeList.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li class="active"><a th:href="@{/gen/genScheme}">生成方案列表</a></li>
+			<li shiro:hasPermission="gen:genScheme:edit"><a th:href="@{/gen/genScheme/form}">生成方案添加</a></li>
+		</ul>
+		<form id="searchForm" modelAttribute="genScheme" th:action="@{/gen/genScheme}" method="post" class="breadcrumb form-search">
+			<input id="pageNo" name="pageNo" type="hidden" th:value="${page.pageNo}"/>
+			<input id="pageSize" name="pageSize" type="hidden" th:value="${page.pageSize}"/>
+			<label>方案名称 ：</label><input id="name" name="name" type="text" th:value="${genScheme.name}" htmlEscape="false" maxlength="50" class="input-medium"/>
+			&nbsp;<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+		</form>
+		<div th:include="common/message :: message(${message}, null)"></div>
+		<table id="contentTable" class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th>方案名称</th>
+					<th>模块名</th>
+					<th>功能名</th>
+					<th>功能作者</th>
+					<th shiro:hasPermission="gen:genScheme:edit">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="genScheme : ${page.list}">
+					<td><a th:href="@{'/gen/genScheme/form?id=' + ${genScheme.id}}" th:text="${genScheme.name}"></a></td>
+					<td th:text="${genScheme.moduleName}"></td>
+					<td th:text="${genScheme.functionName}"></td>
+					<td th:text="${genScheme.functionAuthor}"></td>
+					<td shiro:hasPermission="gen:genScheme:edit">
+	    				<a th:href="@{'/gen/genScheme/form?id=' + ${genScheme.id}}">修改</a>
+						<a th:href="@{'/gen/genScheme/delete?id=' + ${genScheme.id}}" onclick="return confirmx('确认要删除该生成方案吗？', this.href)">删除</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="pagination" th:utext="${page}"></div>
+	</body>
+</html>

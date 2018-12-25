@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+		<link th:href="@{/static/jquery-ztree/3.5.12/css/zTreeStyle/zTreeStyle.min.css}" rel="stylesheet" type="text/css"/>
+		<script th:src="@{/static/jquery-ztree/3.5.12/js/jquery.ztree.all-3.5.min.js}" type="text/javascript"></script>
+		<script type="text/javascript" th:src="@{/static/app/js/modules/sys/roleForm.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li><a th:href="@{/sys/role}">角色列表</a></li>
+			<li class="active">
+				<a shiro:hasPermission="sys:role:edit" th:text="'角色' + ${#strings.isEmpty(role.id) ? '添加' : '修改'}" th:href="@{'/sys/role/form?id=' + ${role.id}}"></a>
+				<a shiro:lacksPermission="sys:role:edit"  th:href="@{'/sys/role/form?id=' + ${role.id}}">角色查看</a>
+			</li>
+		</ul><br/>
+		<form id="inputForm" modelAttribute="role" th:action="@{/sys/role/save}" method="post" class="form-horizontal">
+			<input type="hidden" id="id" name="id" th:value="${role.id}" />
+			<div th:include="common/message :: message(${message}, null)"></div>
+			
+			<div class="control-group" style="display: none">
+				<label class="control-label">归属机构:</label>
+				<div class="controls">
+					<div th:include="common/tree-select :: tree-select('office', 'office.id', ${role.office.id}, 'office.name', ${role.office.name}, '机构', '/sys/office/treeData', '', 'required', false)"></div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">角色名称:</label>
+				<div class="controls">
+					<input id="oldName" name="oldName" type="hidden" th:value="${role.name}">
+					<input id="name" name="name" type="text" th:value="${role.name}" htmlEscape="false" maxlength="50" class="required"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">英文名称:</label>
+				<div class="controls">
+					<input id="oldEnname" name="oldEnname" type="hidden" th:value="${role.enname}">
+					<input id="enname" name="enname" type="text" th:value="${role.enname}" htmlEscape="false" maxlength="50" class="required"/>
+					<span class="help-inline"><font color="red">*</font> 工作流用户组标识</span>
+				</div>
+			</div>
+			<div class="control-group" style="display: none">
+				<label class="control-label">角色类型:</label>
+				<div class="controls">
+					<select name="roleType" class="input-medium">
+						<option value="user">普通角色</option>
+						<option value="assignment">任务分配</option>
+						<option value="security-role">管理角色</option>
+					</select>
+					<span class="help-inline" title="activiti有3种预定义的组类型：security-role、assignment、user 如果使用Activiti Explorer，需要security-role才能看到manage页签，需要assignment才能claim任务">
+						工作流组用户组类型（任务分配：assignment、管理角色：security-role、普通角色：user）</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">是否系统数据:</label>
+				<div class="controls">
+					<select id="sysData" name="sysData" th:value="${role.sysData}" class="input-medium">
+						<option th:each="dict: ${#common.getDictList('yes_no')}" th:value="${dict.value}" th:text="${dict.label}" th:selected="${role.sysData == dict.value}" htmlEscape="false"/>
+					</select>
+					<span class="help-inline">“是”代表此数据只有超级管理员能进行修改，“否”则表示拥有角色修改人员的权限都能进行修改</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">是否可用</label>
+				<div class="controls">
+					<select id="useable" name="useable" th:value="${role.useable}" class="input-medium">
+						<option th:each="dict: ${#common.getDictList('yes_no')}" th:value="${dict.value}" th:text="${dict.label}" th:selected="${role.useable== dict.value}" htmlEscape="false"/>
+					</select>
+					<span class="help-inline">“是”代表此数据可用，“否”则表示此数据不可用</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">数据范围:</label>
+				<div class="controls">
+					<select id="dataScope" name="dataScope" th:value="${role.dataScope}" class="input-medium">
+						<option th:each="dict: ${#common.getDictList('sys_data_scope')}" th:value="${dict.value}" th:text="${dict.label}" th:selected="${role.dataScope== dict.value}" htmlEscape="false"/>
+					</select>
+					<span class="help-inline">特殊情况下，设置为“按明细设置”，可进行跨机构授权</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">角色授权:</label>
+				<div class="controls">
+					<div id="menuTree" class="ztree" style="margin-top:3px;float:left;"></div>
+					<input type="hidden" id="menuList" th:value="${#common.toJsonString(menuList)}" />
+					<input type="hidden" id="menuIds" name="menuIds" th:value="${role.menuIds}" />
+					<div id="officeTree" class="ztree" style="margin-left:100px;margin-top:3px;float:left;"></div>
+					<input type="hidden" id="officeList" th:value="${#common.toJsonString(officeList)}" />
+					<input type="hidden" id="officeIds" name="officeIds" th:value="${role.officeIds}" />
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">备注:</label>
+				<div class="controls">
+					<textarea id="remarks" name="remarks" th:text="${role.remarks}" htmlEscape="false" rows="3" maxlength="200" class="input-xlarge"/>
+				</div>
+			</div>
+			<div class="form-actions">
+				<shiro:hasPermission name="sys:role:edit">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				</shiro:hasPermission>
+				<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			</div>
+		</form>
+	</body>
+</html>

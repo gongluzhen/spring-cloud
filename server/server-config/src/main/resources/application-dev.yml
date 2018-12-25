@@ -1,0 +1,27 @@
+server:
+  port: 1002
+spring:
+  cloud:
+    config:
+      label: master
+      server:
+        git:
+          uri: git@192.168.1.10:sapit/spring-cloud.git
+          search-paths: config
+          ignoreLocalSshSettings: true
+          strictHostKeyChecking: false
+          force-pull: true
+          cloneOnStart: true
+          privateKey: |
+                      -----BEGIN RSA PRIVATE KEY-----
+                      MIIEowIBAAKCAQEA25HXPE+e6Was/WoHUxMWzApLpgj7HBwl6NIoHQvi0DLTBFd6ChPCjOkCdc9DaIn9WBHaSh9iGSCfjZqJr3X0YWIg6e48colFtHaeshBpqSenze9TS6hKcfG3aJVN6eApvve63g58Mb2hYVN2ZryrDdXYUOXG34fNWwVp4R9WOZC/gxbHLdd86P8aMwwauhsJfSpLHz1f81ykkbEJO0J9QkajYTUb8x2MMcO81BZYklCt8Rx79lrRNCzguCgZuLBN3zZHT6DBPjwHzioIm8tNDWTdAkm9UbsWFzh9seWUbPy+D9texL6+t6q0DEEPkrCKPAAEXimwqeO3u0pT6DQYOwIDAQABAoIBAQCFZJHVcy3A8H7yKeMvRi6YYTzaLySXTEZ/roVuOBVglS/7uEVNL/oG71xuRC/Yp9SBF799PpmzWE12ksdJEKkaLKqAVBrnHpx5aYM5/JykhpH8m4QIN8KafNYHNIW0K1pRSWF+nGA5O9J6NWF+QurMqfkUFLSAgplwzdYoTYhtyXDFCxEaS/IR3pt1ouoSiz37j3mrDeBQVZM/XhZMd2iQp4wq9qTFUF6gWrxIA1yv9+uzC7WtxY4cZfev02x2ch3eQceHpaUjgIBnMS0z586wjMRbPQFb9x/vUDDgMsSNPYsmbTUU74aZSHd3QF9L0Jgvd9BlxKMmO3DFyQaZKlxZAoGBAP2lCcf1cqdlW+NKXVDRpNlMsuOzmGdfIOUlyJoY2cxM5Cv+9AgeQKJKh6a/wogV32T6Q3/je06vRa58DgLZV+a+TtHAOrEeuuRAs0c9r2cp4dy1Esbu7TTgwgtCwvYw9qQLqT1O3Il31Ily0oi1gR66gAO6q5xSTj/PIswjN/ydAoGBAN2bzMAFIr2Lmyfpx6Q6EoLU/njV0lSX+ejwTpQ+SKOIaAKKEX/GMiCb90PCBCU7/kw3yQpqVdZJPBF2tvXRaIoamUz6tbqTD9+MFzNSQkebBr9CI+7ZubxrQaa2OYW+WPp6jVibgAdmbxLX4N6niUTjcbdrYuoS6RSqSHYEB1S3AoGAaIwPNQlZgeAIeO4c+oP/A8ZWcf6D0g/m2iyxu7qEg24qGmxTH8mAcKRxt2yQ/VCurMtu6RbVq4AZI6tkhw4Y6jYE/PXT+0+kTxLQEow9cTNVMoi8PZ0bztDZipSxEZLrBoD7+BY6Vrs6spDOcKUHnKfYvjDCLYPLVwfE2wmlOQ0CgYAOtmxGh1DCIsWfRb8SYSSfeQKYBSIcqaZW17Vv1B7AdKrrGD2HLSJg1dn5rqTV0ADXEJERVvPx8RTC2A3XjhqRqKhq2u47v826+rMDnj92P42YHw0Bq4TQRJKsPcbd4UBJCN/fdRtv4lYXeyubvKW5ZBxFoCSGA9FjpNaAt03BSwKBgFV8RlVfThEmeg930pPyDvB/rbDLrU2kCmJ8b5honGkQzzV3kU4CaUtt4DGO+37Xu2tq8g/9YwwqlJraVXmEjy5lmmEfgPsHJB+YH99pZS1faKdYSwBUpduPk2njrJFJQMg8lxlfzjJ7gkAhujksJJHAn/a3KPFznDwCSgreYOxI
+                      -----END RSA PRIVATE KEY-----
+  rabbitmq:
+    host: 192.168.1.10
+    port: 5672
+    username: springcloud
+    password: 123456
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.1.10:1001/eureka/

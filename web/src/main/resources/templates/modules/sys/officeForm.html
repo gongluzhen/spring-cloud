@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/sys/officeForm.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li><a th:href="@{'/sys/office/list?id=' + ${office.parent.id} + '&parentIds=' + ${#strings.isEmpty(office.parentIds) ? '' : office.parentIds}}">机构列表</a></li>
+			<li class="active">
+				<a shiro:hasPermission="sys:office:edit" th:text="'机构' + ${#strings.isEmpty(office.id) ? '添加' : '修改'}" th:href="@{'/sys/office/form?id=' + ${office.id} + '&parent.id=' + ${office.parent.id}}"></a>
+				<a shiro:lacksPermission="sys:office:edit" th:href="@{'/sys/office/form?id=' + ${office.id} + '&parent.id=' + ${office.parent.id}}">机构查看</a>
+			</li>
+		</ul><br/>
+		<form id="inputForm" modelAttribute="office" th:action="@{/sys/office/save}" method="post" class="form-horizontal">
+			<input type="hidden" id="id" name="id" th:value="${office.id}" />
+			<div th:include="common/message :: message(${message}, null)"></div>
+			<div class="control-group">
+				<label class="control-label">上级机构:</label>
+				<div class="controls">
+					<div th:include="common/tree-select :: tree-select('office', 'parent.id', ${office.parent.id}, 'parent.name', ${office.parent.name}, '机构', '/sys/office/treeData', ${office.id}, '', true)"></div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">归属区域:</label>
+				<div class="controls">
+					<div th:include="common/tree-select :: tree-select('area', 'area.id', ${office.area.id}, 'area.name', ${office.area.name}, '区域', '/sys/area/treeData', '', 'required', false)"></div>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">机构名称:</label>
+				<div class="controls">
+					<input id="name" name="name" type="text" th:value="${office.name}" htmlEscape="false" maxlength="50" class="required"/>
+					<span class="help-inline"><font color="red">*</font> </span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">机构编码:</label>
+				<div class="controls">
+					<input id="code" name="code" type="text" th:value="${office.code}" htmlEscape="false" maxlength="50"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">机构类型:</label>
+				<div class="controls">
+					<select id="type" name="type" th:value="${office.type}"  class="input-medium">
+						<option th:each="dict: ${#common.getDictList('sys_office_type')}" th:value="${dict.value}" th:text="${dict.label}" th:selected="${office.type == dict.value}" htmlEscape="false"/>
+					</select>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">是否可用:</label>
+				<div class="controls">
+					<select id="useable" name="useable" th:value="${office.useable}"  class="input-medium">
+						<option th:each="dict: ${#common.getDictList('yes_no')}" th:value="${dict.value}" th:text="${dict.label}" th:selected="${office.useable == dict.value}" htmlEscape="false"/>
+					</select>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">联系地址:</label>
+				<div class="controls">
+					<input id="address" name="address" type="text" th:value="${office.address}" htmlEscape="false" maxlength="50"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">邮政编码:</label>
+				<div class="controls">
+					<input id="zipCode" name="zipCode" type="text" th:value="${office.zipCode}" htmlEscape="false" maxlength="50"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">负责人:</label>
+				<div class="controls">
+					<input id="master" name="master" type="text" th:value="${office.master}" htmlEscape="false" maxlength="50"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">电话:</label>
+				<div class="controls">
+					<input id="phone" name="phone" type="text" th:value="${office.phone}" htmlEscape="false" maxlength="50"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">传真:</label>
+				<div class="controls">
+					<input id="fax" name="fax" type="text" th:value="${office.fax}" htmlEscape="false" maxlength="50"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">邮箱:</label>
+				<div class="controls">
+					<input path="email" name="email" type="text" th:value="${office.email}" htmlEscape="false" maxlength="50"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">备注:</label>
+				<div class="controls">
+					<textarea id="remarks" name="remarks"  th:text="${office.remarks}" htmlEscape="false" rows="3" maxlength="200" class="input-xlarge"/>
+				</div>
+			</div>
+			<c:if test="${empty office.id}">
+				<div class="control-group">
+					<label class="control-label">快速添加下级部门:</label>
+					<div class="controls" style="padding-top: 5px;">
+						<span th:each="dict, dictS : ${#common.getDictList('sys_office_common')}">
+							<input type="checkbox" th:id="'childDeptList' + ${dictS.index}" name="childDeptList" th:value="${dict.value}" th:checked="${#common.isCheckboxChecked(office.childDeptList, dict.value)}" />
+							<label th:for="'childDeptList' + ${dictS.index}" th:text="${dict.label}"></label>
+						</span>
+					</div>
+				</div>
+			</c:if>
+			<div class="form-actions">
+				<shiro:hasPermission name="sys:office:edit">
+					<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+				</shiro:hasPermission>
+				<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			</div>
+		</form>
+	</body>
+</html>

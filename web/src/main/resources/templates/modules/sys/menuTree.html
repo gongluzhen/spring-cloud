@@ -1,0 +1,33 @@
+<div class="accordion" th:id="'menu-' + ${parentId}" th:with="firstMenu=${#httpServletRequest.setAttribute('isFirstMenu', true)}">
+	<div class="accordion-group" th:each="menu, idxStatus : ${menus}" th:if="${menu.parent.id eq parentId and menu.isShow eq '1'}">
+		<div class="accordion-heading">
+			<a class="accordion-toggle" data-toggle="collapse"
+				th:data-parent="'#menu-' + ${parentId}"
+				th:data-href="'#collapse-' + ${menu.id}" 
+				th:href="'#collapse-' + ${menu.id}"
+				th:title="${menu.remarks}">
+				<i th:class="'icon-chevron-' + ${isFirstMenu ? 'down' : 'right'}" th:text="'&nbsp;' + ${menu.name}"></i></a>
+		</div>
+		<div th:id="'collapse-' + ${menu.id}" th:class="'accordion-body collapse ' + ${isFirstMenu ? 'in' : ''}">
+			<div class="accordion-inner" th:with="firstMenu=${#httpServletRequest.setAttribute('isFirstMenu', false)}">
+				<ul class="nav nav-list">
+					<li th:each="menu2 : ${menus}" th:if="${menu2.parent.id eq menu.id and menu2.isShow eq '1'}">
+						<a th:data-href="'.menu3-' + ${menu2.id}"
+							th:href="@{${menu2.href}}"
+							th:target="${#strings.isEmpty(menu2.target) ? 'mainFrame' : menu2.target}">
+							<i th:class="'icon-' + ${#strings.isEmpty(menu2.icon) ? 'circle-arrow-right' : menu2.icon}" th:text="'&nbsp;' + ${menu2.name}"></i>
+						</a>
+						<ul class="nav nav-list hide" style="margin: 0; padding-right: 0;">
+							<li th:class="'menu3-' + ${menu2.id} + ' hide'" th:each="menu3 : ${menus}" th:if="${menu3.parent.id eq menu2.id and menu3.isShow eq '1'}">
+								<a th:href="@{${menu3.href}}"
+									th:target="${#strings.isEmpty(menu3.target) ? 'mainFrame' : menu3.target}">
+									<i th:class="'icon-' + ${#strings.isEmpty(menu3.icon) ? 'circle-arrow-right' : menu3.icon}" th:text="'&nbsp;' + ${menu3.name}"></i>
+								</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>

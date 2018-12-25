@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:layout="http://www.thymeleaf.org">
+	<head>
+		<meta th:replace="common/include :: include"/>
+	    <script type="text/javascript" th:src="@{/static/app/js/modules/generate/code/genSchemeForm.js}"></script>
+	</head>
+	<body>
+		<ul class="nav nav-tabs">
+			<li><a th:href="@{/gen/genScheme}">生成方案列表</a></li>
+			<li class="active">
+				<a shiro:hasPermission="gen:genScheme:edit" th:text="'生成方案' + ${#strings.isEmpty(genScheme.id) ? '添加' : '修改'}" th:href="@{'/gen/genScheme/form?id=' + ${genScheme.id}}"></a>
+				<a shiro:lacksPermission="gen:genScheme:edit" th:href="@{'/gen/genScheme/form?id=' + ${genScheme.id}}">业务表查看</a>
+			</li>
+		</ul><br/>
+		<form id="inputForm" modelAttribute="genScheme" th:action="@{/gen/genScheme/save}" method="post" class="form-horizontal">
+			<input type="hidden" id="id" name="id" th:value="${genScheme.id}" />
+			<input type="hidden" id="flag" name="flag" th:value="${genScheme.flag}" />
+			<div th:include="common/message :: message(${message}, null)"></div>
+			<div class="control-group">
+				<label class="control-label">方案名称:</label>
+				<div class="controls">
+					<input id="name" name="name" type="text" th:value="${genScheme.name}" htmlEscape="false" maxlength="200" class="required"/>
+					<span class="help-inline"></span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">模板分类:</label>
+				<div class="controls">
+					<select id="category" name="category" th:value="${genScheme.category}" class="required input-xlarge">
+						<option th:each="category : ${config.categoryList}" th:text="${category.label}" th:value="${category.value}"
+							th:selected="${category.value == genScheme.category}" htmlEscape="false"/>
+					</select>
+					<span class="help-inline">
+						生成结构：{包名}/{模块名}/{分层(dao,entity,service,web)}/{子模块名}/{java类}
+					</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">项目文件路径:</label>
+				<div class="controls">
+					<input id="projectPath" name="projectPath" type="text" th:value="${genScheme.projectPath}" htmlEscape="false" maxlength="500" class="required input-xlarge"/>
+					<span class="help-inline">例如 D:\workspace_learn\spring-cloud</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">基础包名:</label>
+				<div class="controls">
+					<input id="basePackageName" name="basePackageName" type="text" th:value="${genScheme.basePackageName}" htmlEscape="false" maxlength="500" class="required input-xlarge"/>
+					<span class="help-inline">例如 com.sapit.springcloud</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">生成模块名:</label>
+				<div class="controls">
+					<input id="moduleName" name="moduleName" type="text" th:value="${genScheme.moduleName}" htmlEscape="false" maxlength="500" class="required input-xlarge"/>
+					<span class="help-inline">可理解为子系统名，例如 sys</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">生成功能描述:</label>
+				<div class="controls">
+					<input id="functionName" name="functionName" type="text" th:value="${genScheme.functionName}" htmlEscape="false" maxlength="500" class="required input-xlarge"/>
+					<span class="help-inline">将设置到类描述</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">生成功能名:</label>
+				<div class="controls">
+					<input id="functionNameSimple" name="functionNameSimple" type="text" th:value="${genScheme.functionNameSimple}" htmlEscape="false" maxlength="500" class="required input-xlarge"/>
+					<span class="help-inline">用作功能提示，如：保存“某某”成功</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">生成功能作者:</label>
+				<div class="controls">
+					<input id="functionAuthor" name="functionAuthor" type="text" th:value="${genScheme.functionAuthor}" htmlEscape="false" maxlength="500" class="required input-xlarge"/>
+					<span class="help-inline">功能开发者</span>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">业务表名:</label>
+				<div class="controls">
+					<select id="genTable.id" name="genTable.id" th:value="${genScheme.genTable == null ? '' : genScheme.genTable.id}" class="required input-xlarge">
+						<option th:each="table : ${tableList}" th:text="${table.nameAndComments}" th:value="${table.id}"
+							th:selected="${genScheme.genTable != null and table.id == genScheme.genTable.id}" htmlEscape="false"/>
+					</select>
+					<span class="help-inline">生成的数据表，一对多情况下请选择主表。</span>
+				</div>
+			</div>
+			<div class="control-group hide">
+				<label class="control-label">备注:</label>
+				<div class="controls">
+					<textarea id="remarks" name="remarks" th:text="${genScheme.remarks}" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">生成选项:</label>
+				<div class="controls" style="padding-top: 5px;">
+					<input type="checkbox" id="replaceFile" name="replaceFile" th:value="true" th:checked="${genScheme.replaceFile == true}" />
+					<label for="replaceFile">是否替换现有文件</label>
+				</div>
+			</div>
+			<div class="form-actions">
+				<input shiro:hasPermission="gen:genScheme:edit" id="btnSubmit" class="btn btn-primary" type="submit" value="保存方案" onclick="$('#flag').val('0');"/>&nbsp;
+				<input shiro:hasPermission="gen:genScheme:edit" id="btnSubmit" class="btn btn-danger" type="submit" value="保存并生成代码" onclick="$('#flag').val('1');"/>&nbsp;
+				<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
+			</div>
+		</form>
+	</body>
+</html>

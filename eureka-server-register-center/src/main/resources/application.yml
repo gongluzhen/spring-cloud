@@ -1,0 +1,24 @@
+server:
+  port: 1001
+eureka:
+  environment: dev
+  instance:
+    hostname: localhost
+  server:
+    enable-self-preservation: false #设为false，关闭自我保护
+    eviction-interval-timer-in-ms: 5000 #清理间隔（单位毫秒，默认是60*1000）
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
+spring:
+  application:
+    name: eureka-server-register-center
+  profiles:
+    active: native
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
