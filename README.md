@@ -2,7 +2,7 @@
   spring-cloud.version: Greenwich.M3 <br>
   spring-boot.version: 2.1.0.RELEASE
 # 没有db，哈哈。。。
-# 好多东西没实现，例如：hystrix、zuul、sleuth等等
+# 好多东西没实现，例如：hystrix、zuul、sleuth、分布式事务等等
 # 结构说明:
 	client(eureka feign client模块):
 		client-sys(系统服务调用，包括：用户、组织机构、角色、菜单等服务调用)
