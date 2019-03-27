@@ -1,6 +1,4 @@
-# 为了老板好吹牛学习了一下spring-cloud（我觉的小公司用不上分布式开发和所谓的微服务）
-  spring-cloud.version: Greenwich.M3 <br>
-  spring-boot.version: 2.1.0.RELEASE
+
 # 没有db，哈哈。。。
 # 好多东西没实现，例如：hystrix、zuul、sleuth、分布式事务等等
 # 结构说明:
@@ -22,7 +20,8 @@
 
 # 注意：
 	1、JDK1.8、eclipse Neon；
-	2、eureka server/clint 统一使用POST请求。对象参数只能有一个，要加注解@RequestBody；基本类型参数可以有多个，
+        2、  spring-cloud.version: Greenwich.M3 spring-boot.version: 2.1.0.RELEASE
+	3、eureka server/clint 统一使用POST请求。对象参数只能有一个，要加注解@RequestBody；基本类型参数可以有多个，
 	第一个加其后的加注解@RequestBody，其它的加@RequestParam。@RequestBody会转换成请求的body。@RequestParam为转换成url后面的参数。例子如下：
 		@RequestMapping(value = "save", method = RequestMethod.POST)
 		public void save(@RequestBody User entity, @RequestParam("i") int i) {
