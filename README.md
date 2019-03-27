@@ -20,7 +20,7 @@
 
 # 注意：
 	1、JDK1.8、eclipse Neon；
-        2、  spring-cloud.version: Greenwich.M3 spring-boot.version: 2.1.0.RELEASE
+        2、spring-cloud.version: Greenwich.M3 spring-boot.version: 2.1.0.RELEASE；
 	3、eureka server/clint 统一使用POST请求。对象参数只能有一个，要加注解@RequestBody；基本类型参数可以有多个，
 	第一个加其后的加注解@RequestBody，其它的加@RequestParam。@RequestBody会转换成请求的body。@RequestParam为转换成url后面的参数。例子如下：
 		@RequestMapping(value = "save", method = RequestMethod.POST)
